@@ -66,7 +66,7 @@ if (process.env.NODE_ENV === 'web') {
             'process.env': {
                 NODE_ENV: '"production"'
             },
-            WEBPACK_REMOTE_URL: JSON.stringify("http://192.168.1.221/"),
+            WEBPACK_REMOTE_URL: JSON.stringify(process.env.CONFERO_REMOTE_URL),
             WEBPACK_WEB: JSON.stringify(true)
         }),
         new webpack.optimize.UglifyJsPlugin({
@@ -88,7 +88,7 @@ if (process.env.NODE_ENV === 'web') {
             'process.env': {
                 NODE_ENV: '"production"'
             },
-            WEBPACK_REMOTE_URL: JSON.stringify("http://192.168.1.221/"),
+            WEBPACK_REMOTE_URL: JSON.stringify(process.env.CONFERO_REMOTE_URL),
             WEBPACK_WEB: JSON.stringify(false)
         }),
         new webpack.optimize.UglifyJsPlugin({

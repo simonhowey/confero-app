@@ -24,6 +24,10 @@ document.addEventListener('deviceready', onDeviceReady, false);
 window.COUCH_URL = WEBPACK_REMOTE_URL + "couchdb/";
 window.REMOTE_URL = WEBPACK_REMOTE_URL;
 
+if(WEBPACK_WEB){
+    startVue();
+}
+
 function onDeviceReady() {
     // Mock device.platform property if not available
     if (!window.device) {
