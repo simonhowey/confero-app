@@ -51,6 +51,7 @@
 
         methods: {
             selectPaper(paper){
+                this.$store.commit('events/changeSelectedPaper', paper);
                 this.$store.commit('navigator/push', PaperPage)
             }
         },

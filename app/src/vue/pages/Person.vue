@@ -1,14 +1,14 @@
 <template>
     <v-ons-page>
-        <top-toolbar :backLabel="event.Name" title="Paper"></top-toolbar>
+        <top-toolbar :backLabel="event.Name" title="Person"></top-toolbar>
 
         <v-ons-list>
             <v-ons-list-item>
-                <div class="left" @click="favoritePaper(paper)">
+                <div class="left" @click="favoritePerson(person)">
                     <v-ons-icon icon="fa-star-o" class="list-item__icon"></v-ons-icon>
                 </div>
                 <div class="center">
-                    <span class="title">{{ paper.Title }}</span>
+                    <span class="title">{{ person.Name }}</span>
                 </div>
                 <div class="right">
                 </div>
@@ -18,40 +18,40 @@
                 <div class="left">
                 </div>
                 <div class="center">
+                    <span class="list-item__subtitle">{{ person.Affiliation }}</span>
+                </div>
+                <div class="right">
+                </div>
+            </v-ons-list-item>
+
+            <!--<v-ons-list-header class="subtitle" v-if="sessions && sessions.length > 0">-->
+                <!--Sessions-->
+            <!--</v-ons-list-header>-->
+
+            <!--<v-ons-list-item v-for="session in sessions" @click="selectSession(session)">-->
+                <!--<div class="left">-->
+                <!--</div>-->
+                <!--<div class="center">-->
+                    <!--<span class="list-item__title">{{ session.Title }}</span>-->
+                    <!--<span class="list-item__subtitle">{{ session.Type }}</span>-->
+                    <!--<span class="list-item__subtitle">{{ session.displayTime }}</span>-->
+                <!--</div>-->
+                <!--<div class="right">-->
+                <!--</div>-->
+            <!--</v-ons-list-item>-->
+
+            <v-ons-list-header class="subtitle" v-if="papers && papers.length > 0">
+                <v-ons-icon icon="fa-clone" class="list-item__icon"></v-ons-icon>
+                Papers
+            </v-ons-list-header>
+
+            <v-ons-list-item v-for="paper in papers" @click="selectPaper(paper)">
+                <div class="left">
+                </div>
+                <div class="center">
+                    <span class="list-item__title">{{ paper.Title }}</span>
                     <span class="list-item__subtitle">{{ paper.PersonsString }}</span>
                     <span class="list-item__subtitle">{{ paper.AffiliationsString }}</span>
-
-                </div>
-                <div class="right">
-                </div>
-            </v-ons-list-item>
-
-            <v-ons-list-header class="subtitle" v-if="sessions && sessions.length > 0">
-                Sessions
-            </v-ons-list-header>
-
-            <v-ons-list-item v-for="session in sessions" @click="selectSession(session)">
-                <div class="left">
-                </div>
-                <div class="center">
-                    <span class="list-item__title">{{ session.Title }}</span>
-                    <span class="list-item__subtitle">{{ session.Type }}</span>
-                    <span class="list-item__subtitle">{{ session.displayTime }}</span>
-                </div>
-                <div class="right">
-                </div>
-            </v-ons-list-item>
-
-            <v-ons-list-header class="subtitle" v-if="people && people.length > 0">
-                People
-            </v-ons-list-header>
-
-            <v-ons-list-item v-for="person in people" @click="selectPerson(person)">
-                <div class="left">
-                </div>
-                <div class="center">
-                    <span class="list-item__title">{{ person.Name }}</span>
-                    <span class="list-item__subtitle">{{ person.Affiliation }}</span>
                 </div>
                 <div class="right">
                 </div>
@@ -69,39 +69,18 @@
         computed: {
             ...mapGetters({
                 event: 'events/selectedEvent',
-                paper: 'events/selectedPaper'
+                person: 'events/selectedPerson'
             }),
 
-            sessions: function(){
-                let paperKey = this.$store.getters['events/selectedPaper'].Key;
-                if(paperKey){
+            papers: function(){
+                let personKey = this.$store.getters['events/selectedPerson'].Key;
+                if(personKey){
 
                     let toReturn = [];
-                    let Sessions = this.$store.getters['events/selectedEventSessions'];
-                    Sessions.forEach((session)=>{
-                        if(session.Items.includes(paperKey))
-                            toReturn.push(session)
-                    });
-
-                    return toReturn;
-                } else {
-                    return null;
-                }
-            },
-
-            people: function(){
-                let Authors = this.$store.getters['events/selectedPaper'].Authors;
-                if(Authors){
-
-                    let toReturn = [];
-                    let People = this.$store.getters['events/selectedEventPeople'];
-                    Authors.forEach((authorkey)=>{
-
-                        let matchingAuthor = People.find((person) =>{
-                            return person.Key === authorkey;
-                        });
-                        if(typeof matchingAuthor !== 'undefined')
-                            toReturn.push(matchingAuthor);
+                    let Papers = this.$store.getters['events/selectedEventPapers'];
+                    Papers.forEach((paper)=>{
+                        if(paper.Authors && paper.Authors.includes(personKey))
+                            toReturn.push(paper)
                     });
 
                     return toReturn;
@@ -110,16 +89,17 @@
                 }
             }
 
+
         },
 
         methods: {
-            favoritePaper(paper){
+            favoritePerson(person){
                 return true;
             },
             selectSession(paper){
                 return true;
             },
-            selectPerson(person){
+            selectPaper(paper){
                 return true;
             }
 
