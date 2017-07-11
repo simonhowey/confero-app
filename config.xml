@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.phonegap.helloworld" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
+    <name>Confero</name>
+    <description>
+        Companion application for academic conferences.
+    </description>
+    <author email="simon.howey@gmail.com">
+        Simon Howey
+    </author>
+    <content src="index.html" />
+    <icon src="icon.png" />
+    <splash src="splash.png" />
+
+    <preference name="webviewbounce" value="false" />
+    <preference name="android-minSdkVersion" value="14" />
+
+    <platform name="android">
+        <icon src="icon-60@3x.png" width="180" height="180" />
+    </platform>
+
+
+    <plugin name="cordova-plugin-file" source="npm" spec="~4.1.1" />
+    <plugin name="cordova-plugin-file-transfer" source="npm" spec="~1.5.0" />
+    <plugin name="cordova-plugin-inappbrowser" source="npm" spec="~1.3.0" />
+    <plugin name="cordova-plugin-whitelist" source="npm" spec="~1.2.1" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <engine name="android" spec="~6.1.2" />
+    <plugin name="cordova-sqlite-storage" spec="~2.0.4" />
+    <plugin name="cordova-plugin-splashscreen" spec="~3.2.2" />
+    <plugin name="cordova-plugin-statusbar" spec="~2.1.3" />
+</widget>
