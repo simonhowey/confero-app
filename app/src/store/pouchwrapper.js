@@ -1,9 +1,7 @@
 import PouchDB from '../vendor/pouch'
 import Log from '../utils/Log'
 
-if(WEBPACK_WEB){
-    PouchDB.plugin(require('pouchdb-adapter-memory'));
-} else {
+if (!WEBPACK_WEB) {
     PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 }
 
@@ -15,14 +13,12 @@ export default class PouchWrapper {
         this.EVENT_ITEMS_ID = "Items";
         this.EVENT_PEOPLE_ID = "People";
         this.remoteCouchURL = remoteCouchURL;
-        if(WEBPACK_WEB){
-            this.adapter = {adapter: 'memory'}
-        } else {
+        if (!WEBPACK_WEB) {
             this.adapter = {adapter: 'cordova-sqlite', location: 'default'}
         }
     }
 
-    getEventDBName(event){
+    getEventDBName(event) {
         return "couch" + event.File.toLowerCase().split(".")[0];
     }
 
@@ -39,7 +35,6 @@ export default class PouchWrapper {
                 });
         });
     }
-
 
 
     getEventsIndexRemote() {
@@ -65,7 +60,9 @@ export default class PouchWrapper {
     }
 
 
-    getEventDetailsLocal(dbname, documentID){
+    getEventDetailsLocal(event, documentID) {
+        let dbname = this.getEventDBName(event);
+
         return new Promise((fulfill, reject) => {
             let localdb = this.adapter ? new PouchDB(dbname, this.adapter) : new PouchDB(dbname);
             localdb.get(documentID)
@@ -78,7 +75,8 @@ export default class PouchWrapper {
         });
     }
 
-    replicateRemote(dbname){
+    replicateRemote(event) {
+        let dbname = this.getEventDBName(event);
         return new Promise((fulfill, reject) => {
             let localdb = this.adapter ? new PouchDB(dbname, this.adapter) : new PouchDB(dbname);
             let remotedb = new PouchDB(this.remoteCouchURL + dbname);
@@ -91,6 +89,78 @@ export default class PouchWrapper {
                     reject(err);
                 })
         })
+    }
+
+    getEventFavorites(event) {
+        let dbname = this.getEventDBName(event) + "favorites";
+
+        return new Promise((fulfill, reject) => {
+            let localdb = this.adapter ? new PouchDB(dbname, this.adapter) : new PouchDB(dbname);
+            localdb.get("Favorites")
+                .then((doc) => {
+                    fulfill(doc);
+                })
+                .catch((err) => {
+                    if (err.status === 404)
+                        return localdb.put({_id: "Favorites", People: [], Papers: [], Sessions: []});
+                    else
+                        reject(err);
+                })
+                .then(() => {
+                    return localdb.get("Favorites");
+                })
+                .then((doc) => {
+                    fulfill(doc);
+                })
+                .catch(err => {
+                    reject(err);
+                })
+        });
+    }
+
+    addFavorite(event, favoriteType, key) {
+        let dbname = this.getEventDBName(event) + "favorites";
+
+        return new Promise((fulfill, reject) => {
+            let localdb = this.adapter ? new PouchDB(dbname, this.adapter) : new PouchDB(dbname);
+            localdb.get("Favorites")
+                .then((doc) => {
+                    if(!doc[favoriteType].includes(key))
+                        doc[favoriteType].push(key);
+                    return localdb.put(doc);
+                })
+                .then(() => {
+                    return localdb.get("Favorites");
+                }).then( (doc) => {
+                    fulfill(doc);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
+    removeFavorite(event, favoriteType, key) {
+        let dbname = this.getEventDBName(event) + "favorites";
+
+        return new Promise((fulfill, reject) => {
+            let localdb = this.adapter ? new PouchDB(dbname, this.adapter) : new PouchDB(dbname);
+            localdb.get("Favorites")
+                .then( (doc) => {
+                    let index = doc[favoriteType].indexOf(key);
+                    if(index !== -1)
+                        doc[favoriteType].splice(index, 1);
+
+                    return localdb.put(doc);
+                }).then( () => {
+                    return localdb.get("Favorites");
+                }).then( (doc) => {
+                    fulfill(doc);
+                })
+                .catch( (err) => {
+                    reject(err);
+                });
+        });
     }
 
 

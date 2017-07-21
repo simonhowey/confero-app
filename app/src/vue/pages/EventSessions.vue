@@ -2,9 +2,8 @@
     <v-ons-page>
         <v-ons-search-input class="searchbar" placeholder="Search" v-model="searchText"></v-ons-search-input>
         <v-ons-list modifier="noborder">
-            <v-ons-progress-bar v-if="!filteredSessions" indeterminate></v-ons-progress-bar>
+            <v-ons-progress-bar v-show="!isLoaded" indeterminate></v-ons-progress-bar>
             <template v-for="(session, index) in filteredSessions">
-
                 <v-ons-list-item class="timebar" v-if="index == 0 || filteredSessions[index-1].displayTime != session.displayTime">
                     <div class="left">
                         <v-ons-icon icon="fa-clock-o" class="list-item__icon"></v-ons-icon>
@@ -47,11 +46,20 @@
     export default {
         computed: {
             filteredSessions: function(){
+                if(!this.animationComplete)
+                    return [];
+
+                let Sessions = this.$store.getters['events/selectedEventSessions'];
+                if(Sessions && Sessions.length > 0){
+                    this.$nextTick(function(){
+                        this.isLoaded = true;
+                    })
+                }
+
                 if(this.searchText === ""){
-                    return this.$store.getters['events/selectedEventSessions'];
+                    return Sessions;
                 } else {
-                    return this.$store.getters['events/selectedEventSessions']
-                        .filter((session) => {
+                    return Sessions.filter((session) => {
                             let searchText = this.searchText.toLowerCase();
                             for(let prop in session){
                                 if(session[prop].toString().toLowerCase().includes(searchText))
@@ -88,9 +96,17 @@
                   "#1d447c",
                   "#206900"
               ],
-              searchText: ""
+              searchText: "",
+              isLoaded: false,
+              animationComplete: false,
           }
+        },
+        created(){
+            setTimeout(()=>{
+                this.animationComplete = true;
+            }, 550)
         }
+
     }
 </script>
 

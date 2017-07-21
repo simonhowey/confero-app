@@ -16,7 +16,7 @@
     import EventFavorites from './EventFavorites.vue';
     import EventPeople from './EventPeople.vue';
     import EventPapers from './EventPapers.vue';
-    import EventInfo from './EventInfo.vue';
+    import EventInfo from './Info.vue';
 
 
     import { mapGetters, mapActions } from 'vuex'
@@ -27,13 +27,8 @@
         }),
         data(){
             return {
-                activeIndex: 1,
+                activeIndex: 0,
                 tabs: [
-                    {
-                        label: 'Info',
-                        icon: 'fa-question-circle-o',
-                        page: EventInfo
-                    },
                     {
                         label: 'Sessions',
                         icon: 'fa-clock-o',

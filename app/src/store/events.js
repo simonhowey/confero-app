@@ -7,6 +7,7 @@ const state = {
     Events: [],
     selectedEvent: null,
     selectedEventData: {},
+    selectedEventFavorites: {},
     selectedSession: null,
     selectedPaper: null,
     selectedPerson: null
@@ -17,6 +18,7 @@ const getters = {
     allEvents: state => state.Events,
     selectedEvent: state => state.selectedEvent,
     selectedEventData: state => state.selectedEventData,
+    selectedEventFavorites: state => state.selectedEventFavorites,
     selectedEventSessions: state => state.selectedEventData.Sessions,
     selectedEventPapers: state => state.selectedEventData.Items,
     selectedEventPeople: state => state.selectedEventData.People,
@@ -51,34 +53,81 @@ const actions = {
 
     getEventDetails({commit, state}, {event}){
         let db = new PouchWrapper(COUCH_URL);
-        let dbname = db.getEventDBName(event);
         let documentIDs = [db.EVENT_METADATA_ID, db.EVENT_SESSIONS_ID, db.EVENT_ITEMS_ID, db.EVENT_PEOPLE_ID];
+        let dbname = db.getEventDBName(event);
+
 
         function updateFromLocal(){
             documentIDs.forEach(documentID => {
-                db.getEventDetailsLocal(dbname, documentID)
+                db.getEventDetailsLocal(event, documentID)
                     .then(document => {
-                        if(db.getEventDBName(state.selectedEvent) === dbname){
+                        if(db.getEventDBName(state.selectedEvent) === dbname)
                             commit('updateEventDetails', {id: documentID, doc: document})
-                        }
                     })
                     .catch(err => {
-                        Log.warn(err)
+                        if(err.status === 404)
+                            Log.info("DB: " + dbname + " not in local pouch, replicating from server.");
+                        else
+                            Log.warn(err);
                     })
             });
         }
 
         updateFromLocal();
 
-        db.replicateRemote(dbname)
+        db.replicateRemote(event)
             .then(() => {
                 updateFromLocal();
             })
             .catch(err => {
                 Log.error(err)
             });
-    }
+    },
 
+    getEventFavorites({commit, state}, {event}){
+        //favorites only saved locally
+        let db = new PouchWrapper(null);
+        let eventdbname = db.getEventDBName(event);
+
+        db.getEventFavorites(event)
+            .then(favorites => {
+                if(db.getEventDBName(state.selectedEvent) === eventdbname)
+                    commit('setEventFavorites', favorites);
+            })
+            .catch(err => {
+                Log.error(err);
+            });
+
+    },
+
+    addFavorite({commit, state}, {event, favoriteType, key}){
+        let db = new PouchWrapper(null);
+        let eventdbname = db.getEventDBName(event);
+
+        db.addFavorite(event, favoriteType, key)
+            .then(favorites => {
+                if(db.getEventDBName(state.selectedEvent) === eventdbname)
+                    commit('setEventFavorites', favorites);
+            })
+            .catch(err => {
+                Log.error(err);
+            })
+
+    },
+
+    removeFavorite({commit, state}, {event, favoriteType, key}){
+        let db = new PouchWrapper(null);
+        let eventdbname = db.getEventDBName(event);
+
+        db.removeFavorite(event, favoriteType, key)
+            .then(favorites => {
+                if(db.getEventDBName(state.selectedEvent) === eventdbname)
+                    commit('setEventFavorites', favorites);
+            })
+            .catch(err => {
+                Log.error(err);
+            })
+    }
 
 };
 
@@ -102,6 +151,9 @@ const mutations = {
     },
     changeSelectedPerson (state, person){
         state.selectedPerson = person;
+    },
+    setEventFavorites (state, favorites){
+        state.selectedEventFavorites = favorites;
     }
 };
 

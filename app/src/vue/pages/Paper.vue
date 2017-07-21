@@ -1,11 +1,11 @@
 <template>
     <v-ons-page>
-        <top-toolbar :backLabel="event.Name" title="Paper"></top-toolbar>
+        <top-toolbar :backLabel="event.Name" :title="paper.Type ? paper.Type : 'Paper'"></top-toolbar>
 
         <v-ons-list>
             <v-ons-list-item>
-                <div class="left" @click="favoritePaper(paper)">
-                    <v-ons-icon icon="fa-star-o" class="list-item__icon"></v-ons-icon>
+                <div class="left">
+                    <favorite-star favoriteType="Papers" :favoriteKey="paper.Key"></favorite-star>
                 </div>
                 <div class="center">
                     <span class="title">{{ paper.Title }}</span>
@@ -17,48 +17,36 @@
             <v-ons-list-item>
                 <div class="left">
                 </div>
-                <div class="center">
-                    <span class="list-item__subtitle">{{ paper.PersonsString }}</span>
-                    <span class="list-item__subtitle">{{ paper.AffiliationsString }}</span>
 
+                <div class="center">
+                    <span class="list-item__subtitle" v-if="paper.URL"><a :href="paper.URL" target="_blank">Link</a></span>
+                    <span class="list-item__subtitle" v-if="paper.URLvideo"><a :href="paper.URLvideo" target="_blank">Video</a></span>
                 </div>
                 <div class="right">
                 </div>
             </v-ons-list-item>
 
-            <v-ons-list-header class="subtitle" v-if="sessions && sessions.length > 0">
-                <v-ons-icon icon="fa-clock-o" class="list-item__icon"></v-ons-icon>
-                Sessions
+            <v-ons-list-header class="subtitle" v-if="paper.Abstract">
+                Abstract
             </v-ons-list-header>
 
-            <v-ons-list-item v-for="session in sessions" @click="selectSession(session)">
-                <div class="left">
-                </div>
-                <div class="center">
-                    <span class="list-item__title">{{ session.Title }}</span>
-                    <span class="list-item__subtitle">{{ session.Type }}</span>
-                    <span class="list-item__subtitle">{{ session.displayTime }}</span>
-                </div>
-                <div class="right">
-                </div>
+            <v-ons-list-item>
+                {{ paper.Abstract }}
             </v-ons-list-item>
 
-            <v-ons-list-header class="subtitle" v-if="people && people.length > 0">
-                <v-ons-icon icon="fa-users" class="list-item__icon"></v-ons-icon>
-                People
-            </v-ons-list-header>
-
-            <v-ons-list-item v-for="person in people" @click="selectPerson(person)">
-                <div class="left">
-                </div>
-                <div class="center">
-                    <span class="list-item__title">{{ person.Name }}</span>
-                    <span class="list-item__subtitle">{{ person.Affiliation }}</span>
-                </div>
-                <div class="right">
-                </div>
-            </v-ons-list-item>
         </v-ons-list>
+
+        <people-list :people="people"></people-list>
+        <sessions-list :sessions="sessions"></sessions-list>
+
+        <!--meta tags for google scholar-->
+        <div v-if="paper.Type.toLowerCase().indexOf('paper') != -1">
+            <meta name="citation_title" :content="paper.Title">
+            <meta name="citation_author" v-for="person in people" :content="person.Name">
+            <meta name="citation_publication_date" :content="citationYear">
+        </div>
+
+
     </v-ons-page>
 
 </template>
@@ -66,8 +54,6 @@
 <script>
 
     import { mapGetters } from 'vuex'
-    import SessionPage from './Session.vue'
-    import PersonPage from './Person.vue'
 
     export default {
         computed: {
@@ -83,13 +69,13 @@
                     let toReturn = [];
                     let Sessions = this.$store.getters['events/selectedEventSessions'];
                     Sessions.forEach((session)=>{
-                        if(session.Items.includes(paperKey))
+                        if(session.Items && session.Items.includes(paperKey))
                             toReturn.push(session)
                     });
 
                     return toReturn;
                 } else {
-                    return null;
+                    return [];
                 }
             },
 
@@ -110,24 +96,14 @@
 
                     return toReturn;
                 } else {
-                    return null;
+                    return [];
                 }
+            },
+
+            citationYear: function(){
+                return this.event && this.event.StartDate.split('-')[0];
             }
 
-        },
-
-        methods: {
-            favoritePaper(paper){
-                return true;
-            },
-            selectSession(session){
-                this.$store.commit('events/changeSelectedSession', session);
-                this.$store.commit('navigator/replace', SessionPage);
-            },
-            selectPerson(person){
-                this.$store.commit('events/changeSelectedPerson', person);
-                this.$store.commit('navigator/replace', PersonPage);
-            }
 
         }
 
@@ -138,8 +114,5 @@
 <style scoped>
     .title {
         font-weight: bold;
-    }
-    .subtitle{
-        background-color: #d8d8d8;
     }
 </style>

@@ -44,14 +44,13 @@
             selectEvent(event){
                 this.$store.commit('events/changeSelectedEvent', event);
                 this.$store.dispatch('events/getEventDetails', {event: event});
-                this.$store.commit('navigator/push', EventPage)
+                this.$store.dispatch('events/getEventFavorites', {event: event});
+                this.$store.commit('navigator/push', EventPage);
             }
         }
     }
 </script>
 
 <style scoped>
-    .listchevron {
-        opacity: .5;
-    }
+
 </style>

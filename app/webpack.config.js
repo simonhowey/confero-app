@@ -49,6 +49,7 @@ module.exports = {
         }
     },
     devServer: {
+        contentBase: '../www',
         historyApiFallback: true,
         noInfo: true
     },

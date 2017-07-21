@@ -2,7 +2,7 @@
     <v-ons-page>
         <v-ons-search-input class="searchbar" placeholder="Search" v-model="searchText"></v-ons-search-input>
         <v-ons-list modifier="noborder">
-            <v-ons-progress-bar v-if="!filteredPeople" indeterminate></v-ons-progress-bar>
+            <v-ons-progress-bar v-show="!isLoaded" indeterminate></v-ons-progress-bar>
             <template v-for="person in filteredPeople">
 
                 <v-ons-list-item
@@ -30,11 +30,20 @@
     export default {
         computed: {
             filteredPeople: function(){
+                if(!this.animationComplete)
+                    return [];
+
+                let People = this.$store.getters['events/selectedEventPeople'];
+                if(People && People.length > 0){
+                    this.$nextTick(function(){
+                        this.isLoaded = true;
+                    })
+                }
+
                 if(this.searchText === ""){
-                    return this.$store.getters['events/selectedEventPeople'];
+                    return People;
                 } else {
-                    return this.$store.getters['events/selectedEventPeople']
-                        .filter((person) => {
+                    return People.filter((person) => {
                             let searchText = this.searchText.toLowerCase();
                             for(let prop in person){
                                 if(person[prop].toString().toLowerCase().includes(searchText))
@@ -55,19 +64,21 @@
 
         data(){
             return {
-                searchText: ""
+                searchText: "",
+                animationComplete: false,
+                isLoaded: false
             }
+        },
+        created(){
+            setTimeout(()=>{
+                this.animationComplete = true;
+            }, 700)
         }
     }
 </script>
 
 <style scoped>
-    .chevron {
-        width: 15px;
-    }
-    .awardtext {
-        font-weight: bold;
-    }
+
     .searchbar {
         width: 100%;
     }

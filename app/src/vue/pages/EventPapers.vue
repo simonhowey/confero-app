@@ -2,11 +2,10 @@
     <v-ons-page>
         <v-ons-search-input class="searchbar" placeholder="Search" v-model="searchText"></v-ons-search-input>
         <v-ons-list modifier="noborder">
-            <v-ons-progress-bar v-if="!filteredPapers" indeterminate></v-ons-progress-bar>
             <template v-for="paper in filteredPapers">
-
+                <v-ons-progress-bar v-show="!isLoaded" indeterminate></v-ons-progress-bar>
                 <v-ons-list-item
-                        @click="selectPaper(session)"
+                        @click="selectPaper(paper)"
                         modifier="chevron" tappable>
                     <div class="left">
                         <v-ons-icon v-if="paper.Award" icon="fa-trophy" size="30px" class="list-item__icon"></v-ons-icon>
@@ -20,7 +19,6 @@
                         <v-ons-icon icon="fa-chevron" class="list-item__icon chevron"></v-ons-icon>
                     </div>
                 </v-ons-list-item>
-
             </template>
 
         </v-ons-list>
@@ -33,11 +31,20 @@
     export default {
         computed: {
             filteredPapers: function(){
+                if(!this.animationComplete)
+                    return [];
+
+                let Papers = this.$store.getters['events/selectedEventPapers'];
+                if(Papers && Papers.length > 0){
+                    this.$nextTick(function(){
+                        this.isLoaded = true;
+                    })
+                }
+
                 if(this.searchText === ""){
-                    return this.$store.getters['events/selectedEventPapers'];
+                    return Papers;
                 } else {
-                    return this.$store.getters['events/selectedEventPapers']
-                        .filter((session) => {
+                    return Papers.filter((session) => {
                             let searchText = this.searchText.toLowerCase();
                             for(let prop in session){
                                 if(session[prop].toString().toLowerCase().includes(searchText))
@@ -58,9 +65,17 @@
 
         data(){
             return {
-                searchText: ""
+                searchText: "",
+                animationComplete: false,
+                isLoaded: false
             }
+        },
+        created(){
+            setTimeout(()=>{
+                this.animationComplete = true;
+            }, 700)
         }
+
     }
 </script>
 
