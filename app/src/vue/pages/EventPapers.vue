@@ -1,9 +1,8 @@
 <template>
-    <v-ons-page>
+    <v-ons-page :infinite-scroll="loadMore">
         <v-ons-search-input class="searchbar" placeholder="Search" v-model="searchText"></v-ons-search-input>
         <v-ons-list modifier="noborder">
-            <template v-for="paper in filteredPapers">
-                <v-ons-progress-bar v-show="!isLoaded" indeterminate></v-ons-progress-bar>
+            <template v-for="paper in viewablePapers">
                 <v-ons-list-item
                         @click="selectPaper(paper)"
                         modifier="chevron" tappable>
@@ -30,16 +29,9 @@
 
     export default {
         computed: {
+            //handles search
             filteredPapers: function(){
-                if(!this.animationComplete)
-                    return [];
-
                 let Papers = this.$store.getters['events/selectedEventPapers'];
-                if(Papers && Papers.length > 0){
-                    this.$nextTick(function(){
-                        this.isLoaded = true;
-                    })
-                }
 
                 if(this.searchText === ""){
                     return Papers;
@@ -60,21 +52,31 @@
             selectPaper(paper){
                 this.$store.commit('events/changeSelectedPaper', paper);
                 this.$store.commit('navigator/push', PaperPage)
+            },
+            loadMore(done) {
+                let alreadyLoaded = this.viewablePapers.length;
+
+                for (let i = alreadyLoaded, k = 0; i < this.filteredPapers.length, k < 20; k++, i++) {
+                    this.viewablePapers.push(this.filteredPapers[i]);
+                }
+                //because it gets called before onsen injects it... prevents errors not actually needed
+                if(done) done();
+            }
+        },
+
+        watch: {
+            filteredPapers: function(){
+                this.viewablePapers = [];
+                this.loadMore();
             }
         },
 
         data(){
             return {
                 searchText: "",
-                animationComplete: false,
-                isLoaded: false
+                viewablePapers: []
             }
         },
-        created(){
-            setTimeout(()=>{
-                this.animationComplete = true;
-            }, 700)
-        }
 
     }
 </script>

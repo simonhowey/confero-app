@@ -1,5 +1,6 @@
 //based on https://github.com/frandiox/vue-onsenui-kitchensink/blob/master/src/store.js
 
+//all navigation for the pagestack and the tabs
 const state = {
     stack: [],
     options: {}

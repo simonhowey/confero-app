@@ -18,7 +18,7 @@
     <engine name="android" spec="~6.1.2" />
 
     <preference name="webviewbounce" value="false" />
-    <preference name="DisallowOverscroll" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
 
     <preference name="android-minSdkVersion" value="14" />
 

@@ -3,6 +3,7 @@ import Log from '../utils/Log'
 import Vue from 'vue'
 
 // initial state
+// holds all information about events including what is currently selected. All rendering is based off of this store
 const state = {
     Events: [],
     selectedEvent: null,
@@ -30,7 +31,7 @@ const getters = {
 };
 
 
-// actions
+// actions that can be used by vue components for changing state
 const actions = {
     getEvents ({commit}) {
         let db = new PouchWrapper(COUCH_URL);

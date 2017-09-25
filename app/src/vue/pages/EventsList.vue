@@ -17,7 +17,6 @@
                 </div>
 
                 <div class="right">
-
                 </div>
 
             </v-ons-list-item>
@@ -35,12 +34,14 @@
             ...mapGetters({
                 events: 'events/allEvents'
             }),
+            //for images see :src
             REMOTE_URL: function() { return window.REMOTE_URL}
         },
         created () {
             this.$store.dispatch('events/getEvents');
         },
         methods: {
+            //selecting event will push eventpage onto pagestack and get details for event and favorites
             selectEvent(event){
                 this.$store.commit('events/changeSelectedEvent', event);
                 this.$store.dispatch('events/getEventDetails', {event: event});
@@ -50,7 +51,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>

@@ -5,6 +5,8 @@ if (!WEBPACK_WEB) {
     PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 }
 
+
+//Wraps all access to to pouchdb to keep it in one place and not make the vuex stores messy
 export default class PouchWrapper {
 
     constructor(remoteCouchURL) {
@@ -18,10 +20,12 @@ export default class PouchWrapper {
         }
     }
 
+    //since filenames have to start with lowercase everything is prefixed with couch on server and client
     getEventDBName(event) {
         return "couch" + event.File.toLowerCase().split(".")[0];
     }
 
+    //loads local index of events
     getEventsIndexLocal() {
         return new Promise((fulfill, reject) => {
             let dbname = "index";
@@ -36,7 +40,7 @@ export default class PouchWrapper {
         });
     }
 
-
+    //will try and get the indexes from remote
     getEventsIndexRemote() {
         return new Promise((fulfill, reject) => {
             let dbname = "index";
@@ -58,7 +62,6 @@ export default class PouchWrapper {
                 })
         })
     }
-
 
     getEventDetailsLocal(event, documentID) {
         let dbname = this.getEventDBName(event);

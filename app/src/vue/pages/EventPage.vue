@@ -1,3 +1,4 @@
+
 <template>
     <v-ons-page>
         <top-toolbar backLabel="Home" :title="event.Name"></top-toolbar>
@@ -21,6 +22,7 @@
 
     import { mapGetters, mapActions } from 'vuex'
 
+    //this is really just a wrapper for the tabbar loads eventsession by default because it is index 0 in tabs
     export default {
         computed: mapGetters({
             event: 'events/selectedEvent'

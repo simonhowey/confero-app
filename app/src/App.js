@@ -1,3 +1,4 @@
+
 import 'onsenui/css/onsenui.css';
 import 'onsenui/css/onsen-css-components.css';
 import Vue from 'vue';
@@ -75,6 +76,7 @@ function startVue(){
             events: events
         }
     });
+    //Loads up the main page which is just a wrapper for onsen
 
     new Vue({
         el: '#app',

@@ -2,7 +2,6 @@
     <v-ons-page>
         <top-toolbar :backLabel="accessedFromHome ? 'Home' : event.Name" title="Info"></top-toolbar>
 
-
         <div v-if="!accessedFromHome">
             <div class="title">{{ event.Description }}</div>
 
@@ -51,7 +50,6 @@
                                 <a href='https://www.cs.ubc.ca/~rtholmes/' target='_blank'>Reid Holmes</a>
                                 and <a href='http://rylan.icottrell.com/Home.html' target='_blank'>Rylan Cottrell</a>
                             </p>
-
                             <p>
                                 If you have any suggestions or encounter any problems, please file an issue on
                                 <a href="https://github.com/Simonah88/confero-app" target="_blank">Github</a>

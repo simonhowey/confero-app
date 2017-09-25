@@ -101,6 +101,8 @@
               animationComplete: false,
           }
         },
+
+        //kind of  hack that lets the animation complete before triggering the render which lags
         created(){
             setTimeout(()=>{
                 this.animationComplete = true;

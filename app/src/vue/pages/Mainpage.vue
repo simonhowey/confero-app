@@ -9,6 +9,7 @@
 <script>
     import EventsList from './EventsList.vue'
 
+    //Sets up onsen pagestack and pushes the event list onto it
     export default {
         beforeCreate() {
             this.$store.commit('navigator/push', EventsList);
@@ -16,11 +17,6 @@
         computed: {
             pageStack() {
                 return this.$store.state.navigator.stack;
-            }
-        },
-        methods: {
-            storePop() {
-                this.$store.commit('navigator/pop');
             }
         }
     };

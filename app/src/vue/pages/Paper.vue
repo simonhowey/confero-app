@@ -30,7 +30,7 @@
                 Abstract
             </v-ons-list-header>
 
-            <v-ons-list-item>
+            <v-ons-list-item v-if="paper.Abstract">
                 {{ paper.Abstract }}
             </v-ons-list-item>
 
