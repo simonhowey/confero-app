@@ -8,6 +8,9 @@ module.exports = {
         publicPath: './build/',
         filename: 'build.js'
     },
+    node: {
+        fs: "mock"
+    },
     module: {
         rules: [
             {

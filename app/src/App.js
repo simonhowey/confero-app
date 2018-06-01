@@ -30,7 +30,6 @@ Vue.component('people-list', PeopleList);
 Vue.component('sessions-list', SessionsList);
 Vue.component('calendar-exporter', CalendarExporter);
 
-
 //https://stackoverflow.com/questions/17887348/phonegap-open-link-in-browser
 document.addEventListener('deviceready', onDeviceReady, false);
 
