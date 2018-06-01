@@ -9,7 +9,7 @@ module.exports = {
         filename: 'build.js'
     },
     node: {
-        fs: "mock"
+        fs: "empty"
     },
     module: {
         rules: [
