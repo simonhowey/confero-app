@@ -33,9 +33,8 @@ Vue.component('calendar-exporter', CalendarExporter);
 //https://stackoverflow.com/questions/17887348/phonegap-open-link-in-browser
 document.addEventListener('deviceready', onDeviceReady, false);
 
-window.COUCH_URL = WEBPACK_REMOTE_URL + "couchdb/";
-window.REMOTE_URL = WEBPACK_REMOTE_URL;
-
+window.REMOTE_URL = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '') +"/";
+window.COUCH_URL = window.REMOTE_URL + "/couchdb/";
 //bit of a hack for the phonegap serve because it uses the web stuff but fires onDeviceReady as well
 //but web version just ends up getting served with phonegap
 var vueStarted = false;
